@@ -32,7 +32,7 @@ export default function Profiles() {
           aria-expanded={open ? "true" : undefined}
         >
           <Avatar
-            sx={{ width: 34, height: 34 }}
+            sx={{ width: 36, height: 36 }}
             src="https://scontent.fsgn5-9.fna.fbcdn.net/v/t1.6435-1/210010484_3063243800574743_2380137577466830535_n.jpg?stp=cp0_dst-jpg_p40x40&_nc_cat=102&ccb=1-7&_nc_sid=5f2048&_nc_eui2=AeGl9MBpOUQ_ALOhJLjsC-cerRD8Wqz9qnitEPxarP2qeL8-S3pq6a-_ZhuwYQsecOwNlVtreJYl0vMJThn_KK1r&_nc_ohc=j-qKX5adv5wAb4cJpsL&_nc_ht=scontent.fsgn5-9.fna&oh=00_AfB-PMtZ3uwyZlbv3PpCfvb7gBoo1lVkrRhgd_q79f3Xng&oe=664FDB47"
           />
         </IconButton>
