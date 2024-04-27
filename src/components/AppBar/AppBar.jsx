@@ -14,12 +14,12 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
 import { ReactComponent as trelloIcon } from "~/assets/mdi--trello.svg";
-import ModeSelect from "../ModeSelect";
 import Profiles from "./Menus/Profiles";
 import Recent from "./Menus/Recent";
 import Starred from "./Menus/Starred";
 import Templates from "./Menus/Templates";
 import WorkSpaces from "./Menus/WorkSpaces";
+import ModeSelect from "../ModeSelect/ModeSelect";
 function AppBar() {
   const [searchValue, setSearchValue] = useState("");
   return (
