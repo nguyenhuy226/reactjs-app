@@ -6,7 +6,12 @@ export const mockData = {
     type: "public", // 'private'
     ownerIds: [], // Những users là Admin của board
     memberIds: [], // Những users là member bình thường của board
-    columnOrderIds: ["column-id-03", "column-id-02", "column-id-01"], // Thứ tự sắp xếp / vị trí của các Columns trong 1 boards
+    columnOrderIds: [
+      "column-id-03",
+      "column-id-02",
+      "column-id-01",
+      "column-id-04",
+    ], // Thứ tự sắp xếp / vị trí của các Columns trong 1 boards
     columns: [
       {
         _id: "column-id-01",
@@ -185,6 +190,25 @@ export const mockData = {
             memberIds: [],
             comments: [],
             attachments: [],
+          },
+        ],
+      },
+      {
+        _id: "column-id-04",
+        boardId: "board-id-01",
+        title: "Done Column 04",
+        // cách xử lý bug logic thư viện DND-kit khi column là rỗng:
+        // phía FE sẽ tự tạo ra một cái card đặc biệt : placeholder card  không liên quan tới back-end
+        // card đặc biệt này sẽ được ẩn ở giao diện UI người dùng .
+        // cấu trúc ID của cái card này để unique đơn giản không phải làm random phức tạp: column-palceholder-card
+        // mỗi column chỉ có thể tối đa 1 cái palceholder card hoặc là không có nó
+        cardOrderIds: ["column-id-04-placeholder-card"],
+        cards: [
+          {
+            _id: "column-id-04-placeholder-card",
+            boardId: "board-id-01",
+            columnId: "column-id-04",
+            FE_placeholderCard: true,
           },
         ],
       },
