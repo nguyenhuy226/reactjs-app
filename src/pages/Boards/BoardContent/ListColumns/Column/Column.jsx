@@ -20,7 +20,6 @@ import Typography from "@mui/material/Typography";
 import React from "react";
 import { mapOrder } from "~/utils/sorts";
 import ListCards from "./ListCards/ListCards";
-import { Opacity } from "@mui/icons-material";
 
 function Column({ column }) {
   const {

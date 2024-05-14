@@ -42,12 +42,14 @@ export default function BoardBar({ board }) {
       }}
     >
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-        <Chip
-          icon={<DashboardIcon />}
-          label={board?.title}
-          clickable
-          sx={MENU_STYLE}
-        />
+        <Tooltip title={board?.description}>
+          <Chip
+            icon={<DashboardIcon />}
+            label={board?.title}
+            clickable
+            sx={MENU_STYLE}
+          />
+        </Tooltip>
         <Chip
           icon={<VpnLockIcon />}
           label={capitalizeFirstLetter(board?.type)}
