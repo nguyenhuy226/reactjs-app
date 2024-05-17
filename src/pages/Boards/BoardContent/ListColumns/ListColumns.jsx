@@ -11,18 +11,23 @@ import {
 } from "@dnd-kit/sortable";
 import { useState } from "react";
 
-function ListColumns({ columns }) {
+function ListColumns({ columns, createNewColumn, createNewCard }) {
   // thằng SortableContext yêu cầu  items  là một mảng dạng ['id-1','id-2',..] chứ không phải [{id : 'id-1'},{id:'id-2'}]
   // Nếu không đúng thì vẫn kéo thả được nhưng không có animation
   // https://github.com/clauderic/dnd-kit/issues/183#issuecomment-812569512
   const [openNewClumnForm, setOpenNewClumnForm] = useState(false);
   const toggleOpenNewColumnForm = () => setOpenNewClumnForm(!openNewClumnForm);
   const [newColumnTitle, setNewColumnTitle] = useState("");
-  const addNewColumn = () => {
+  const addNewColumn = async () => {
     if (!newColumnTitle) {
       toast.error("please enter column title");
       return;
     }
+    // tọa dữ liệu để gọi api
+    const newColumnData = {
+      title: newColumnTitle,
+    };
+    await createNewColumn(newColumnData);
     toggleOpenNewColumnForm();
     setNewColumnTitle("");
   };
@@ -43,7 +48,11 @@ function ListColumns({ columns }) {
         }}
       >
         {columns?.map((column) => (
-          <Column key={column._id} column={column} />
+          <Column
+            key={column._id}
+            column={column}
+            createNewCard={createNewCard}
+          />
         ))}
         {!openNewClumnForm ? (
           <Box

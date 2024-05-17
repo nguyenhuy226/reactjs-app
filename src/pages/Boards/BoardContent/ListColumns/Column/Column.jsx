@@ -24,7 +24,7 @@ import { mapOrder } from "~/utils/sorts";
 import { toast } from "react-toastify";
 import ListCards from "./ListCards/ListCards";
 
-function Column({ column }) {
+function Column({ column, createNewCard }) {
   const {
     attributes,
     listeners,
@@ -60,11 +60,16 @@ function Column({ column }) {
   const [openNewCardForm, setOpenNewCardForm] = useState(false);
   const toggleOpenNewCardForm = () => setOpenNewCardForm(!openNewCardForm);
   const [newCardTitle, setNewCardTitle] = useState("");
-  const addNewCard = () => {
+  const addNewCard = async () => {
     if (!newCardTitle) {
       toast.error("please enter card title", { position: "bottom-right" });
       return;
     }
+    const newCardData = {
+      title: newCardTitle,
+      columnId: column._id,
+    };
+    await createNewCard(newCardData);
     toggleOpenNewCardForm();
     setNewCardTitle("");
   };

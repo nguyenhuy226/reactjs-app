@@ -26,7 +26,11 @@ const ACTIVE_DRAG_ITEM_TYPE = {
   CARD: "ACTIVE_DRAG_ITEM_TYPE_CARD",
 };
 
-export default function BoardContent({ board }) {
+export default function BoardContent({
+  board,
+  createNewColumn,
+  createNewCard,
+}) {
   // nếu dúng pinterSensor  mặc định thì phải kết hợp thuộc tích css touch-action: none ở những phần tử nào kéo thả - nhưng mà còn bug
   // const pointerSensor = useSensor(PointerSensor, {
   //   activationConstraint: { distance: 10 },
@@ -365,7 +369,11 @@ export default function BoardContent({ board }) {
           p: "10px 0",
         }}
       >
-        <ListColumns columns={orderedColumns} />
+        <ListColumns
+          columns={orderedColumns}
+          createNewColumn={createNewColumn}
+          createNewCard={createNewCard}
+        />
         <DragOverlay dropAnimation={drogAnimation}>
           {!activeDragItemType && null}
           {activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN && (
