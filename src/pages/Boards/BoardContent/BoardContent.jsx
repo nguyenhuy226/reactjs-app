@@ -30,6 +30,7 @@ export default function BoardContent({
   board,
   createNewColumn,
   createNewCard,
+  moveColumns,
 }) {
   // nếu dúng pinterSensor  mặc định thì phải kết hợp thuộc tích css touch-action: none ở những phần tử nào kéo thả - nhưng mà còn bug
   // const pointerSensor = useSensor(PointerSensor, {
@@ -283,7 +284,7 @@ export default function BoardContent({
         );
         // const dndOrderedColumnsIds = dndOrderedColumns.map(c=> c.id)
         // 2 mảng trên sau này dùng để xử lý gọi api
-
+        moveColumns(dndOrderedColumns);
         // cập nhật lại state columns ban đầu sau khi đã kéo thả
         setOrderedColumns(dndOrderedColumns);
       }
