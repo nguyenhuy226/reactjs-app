@@ -4,15 +4,20 @@ import { useEffect, useState } from "react";
 import AppBar from "~/components/AppBar/AppBar";
 import BoardBar from "./BoardBar/BoardBar";
 import BoardContent from "./BoardContent/BoardContent";
+import Box from "@mui/material/Box";
+
 import {
   fetchBoardDetailsAPI,
   createNewColumnAPI,
   createNewCardAPI,
   updateBoardDetailsAPI,
+  updateColumnDetailsAPI,
+  moveCardToDifferentColumnAPI,
 } from "~/apis";
 
 import { generatePlaceholderCard } from "~/utils/formatter";
 import { isEmpty } from "lodash";
+import { mapOrder } from "~/utils/sorts";
 
 function Board() {
   const [board, setBoard] = useState(null);
@@ -20,10 +25,13 @@ function Board() {
   useEffect(() => {
     const boardId = "664323921f09c40af7fafe4b";
     fetchBoardDetailsAPI(boardId).then((board) => {
+      board.columns = mapOrder(board?.columns, board?.columnOrderIds, "_id");
       board.columns.forEach((column) => {
         if (isEmpty(column.cards)) {
           column.cards = [generatePlaceholderCard(column)];
           column.cardOrderIds = [generatePlaceholderCard(column)._id];
+        } else {
+          column.cards = mapOrder(column?.cards, column?.cardOrderIds, "_id");
         }
       });
       setBoard(board);
@@ -62,17 +70,65 @@ function Board() {
     setBoard(newBoard);
   };
 
-  const moveColumns = async (dndOrderedColumns) => {
+  const moveColumns = (dndOrderedColumns) => {
     const dndOrderedColumnsIds = dndOrderedColumns.map((c) => c._id);
     const newBoard = { ...board };
     newBoard.columns = dndOrderedColumns;
     newBoard.columnOrderIds = dndOrderedColumnsIds;
     setBoard(newBoard);
-    console.log(dndOrderedColumns);
-    await updateBoardDetailsAPI(newBoard._id, {
+
+    updateBoardDetailsAPI(newBoard._id, {
       columnOrderIds: newBoard.columnOrderIds,
     });
   };
+
+  // khi di chuyển card trong cùng column
+  // chỉ cần gọi Api để cập nhật mảng CardOrderIds của column chứa nó ( thay đổi vị trí trong mảng)
+  const moveCardIntheSameColumn = (
+    dndOrderedCards,
+    dndOrderedCardIds,
+    columnId
+  ) => {
+    const newBoard = { ...board };
+    const columnToUpdate = newBoard.columns.find(
+      (column) => column._id === columnId
+    );
+    if (columnToUpdate) {
+      columnToUpdate.cards = dndOrderedCards;
+      columnToUpdate.cardOrderIds = dndOrderedCardIds;
+    }
+    setBoard(newBoard);
+
+    updateColumnDetailsAPI(columnId, {
+      cardOrderIds: dndOrderedCardIds,
+    });
+  };
+
+  const moveCardToDifferentColumn = (
+    currentCardId,
+    prevcolumnId,
+    nextColumnId,
+    dndOrderedColumns
+  ) => {
+    const dndOrderedColumnsIds = dndOrderedColumns.map((c) => c._id);
+    const newBoard = { ...board };
+    newBoard.columns = dndOrderedColumns;
+    newBoard.columnOrderIds = dndOrderedColumnsIds;
+    setBoard(newBoard);
+
+    moveCardToDifferentColumnAPI({
+      currentCardId,
+      prevcolumnId,
+      prevCardOrderIds: dndOrderedColumns.find((c) => c._id === prevcolumnId)
+        ?.cardOrderIds,
+      nextColumnId,
+      nextCardOrderIds: dndOrderedColumns.find((c) => c._id === nextColumnId)
+        ?.cardOrderIds,
+    });
+  };
+  if (!board) {
+    return <Box>loading...</Box>;
+  }
   return (
     <Container disableGutters maxWidth={false} sx={{ height: "100vh" }}>
       <AppBar />
@@ -82,6 +138,8 @@ function Board() {
         createNewColumn={createNewColumn}
         createNewCard={createNewCard}
         moveColumns={moveColumns}
+        moveCardIntheSameColumn={moveCardIntheSameColumn}
+        moveCardToDifferentColumn={moveCardToDifferentColumn}
       />
     </Container>
   );

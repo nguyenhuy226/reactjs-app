@@ -1,6 +1,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import AddCardIcon from "@mui/icons-material/AddCard";
+import CloseIcon from "@mui/icons-material/Close";
 import Cloud from "@mui/icons-material/Cloud";
 import ContentCopy from "@mui/icons-material/ContentCopy";
 import ContentCut from "@mui/icons-material/ContentCut";
@@ -8,8 +9,6 @@ import ContentPaste from "@mui/icons-material/ContentPaste";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import DragHandleIcon from "@mui/icons-material/DragHandle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import CloseIcon from "@mui/icons-material/Close";
-import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
@@ -17,10 +16,10 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import React, { useState } from "react";
-import { mapOrder } from "~/utils/sorts";
 import { toast } from "react-toastify";
 import ListCards from "./ListCards/ListCards";
 
@@ -55,12 +54,12 @@ function Column({ column, createNewCard }) {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const orderedCards = mapOrder(column?.cards, column?.cardOrderIds, "_id");
+  const orderedCards = column.cards;
 
   const [openNewCardForm, setOpenNewCardForm] = useState(false);
   const toggleOpenNewCardForm = () => setOpenNewCardForm(!openNewCardForm);
   const [newCardTitle, setNewCardTitle] = useState("");
-  const addNewCard = async () => {
+  const addNewCard = () => {
     if (!newCardTitle) {
       toast.error("please enter card title", { position: "bottom-right" });
       return;
@@ -69,7 +68,7 @@ function Column({ column, createNewCard }) {
       title: newCardTitle,
       columnId: column._id,
     };
-    await createNewCard(newCardData);
+    createNewCard(newCardData);
     toggleOpenNewCardForm();
     setNewCardTitle("");
   };

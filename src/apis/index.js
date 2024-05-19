@@ -14,6 +14,22 @@ export const updateBoardDetailsAPI = async (boardId, updateData) => {
   return respone.data;
 };
 
+export const moveCardToDifferentColumnAPI = async (updateData) => {
+  const respone = await axios.put(
+    `${API_ROOT}/v1/board/supports/moving_cards`,
+    updateData
+  );
+  return respone.data;
+};
+
+export const updateColumnDetailsAPI = async (columnId, updateData) => {
+  const respone = await axios.put(
+    `${API_ROOT}/v1/columns/${columnId}`,
+    updateData
+  );
+  return respone.data;
+};
+
 export const createNewColumnAPI = async (newColumnData) => {
   const respone = await axios.post(`${API_ROOT}/v1/columns/`, newColumnData);
   return respone.data;

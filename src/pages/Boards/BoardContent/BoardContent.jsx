@@ -10,13 +10,12 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { MouseSensor, TouchSensor } from "~/customLibraries/dndKitSensors";
 import { arrayMove } from "@dnd-kit/sortable";
 import Box from "@mui/material/Box";
 import { cloneDeep, isEmpty } from "lodash";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { MouseSensor, TouchSensor } from "~/customLibraries/dndKitSensors";
 import { generatePlaceholderCard } from "~/utils/formatter";
-import { mapOrder } from "~/utils/sorts";
 import Column from "./ListColumns/Column/Column";
 import Card from "./ListColumns/Column/ListCards/Card/Card";
 import ListColumns from "./ListColumns/ListColumns";
@@ -31,6 +30,8 @@ export default function BoardContent({
   createNewColumn,
   createNewCard,
   moveColumns,
+  moveCardIntheSameColumn,
+  moveCardToDifferentColumn,
 }) {
   // nếu dúng pinterSensor  mặc định thì phải kết hợp thuộc tích css touch-action: none ở những phần tử nào kéo thả - nhưng mà còn bug
   // const pointerSensor = useSensor(PointerSensor, {
@@ -59,7 +60,7 @@ export default function BoardContent({
   const lastOverId = useRef(null);
 
   useEffect(() => {
-    setOrderedColumns(mapOrder(board?.columns, board?.columnOrderIds, "_id"));
+    setOrderedColumns(board?.columns);
   }, [board]);
 
   // tìm một column theo một idcard
@@ -77,7 +78,8 @@ export default function BoardContent({
     over,
     activeColumn,
     activeDraggingCardId,
-    activeDraggingCardData
+    activeDraggingCardData,
+    triggerFrom
   ) => {
     setOrderedColumns((prevColumns) => {
       // Tìm vị trí (index) của overCard  trong column đích (nơi card sắp được thả )
@@ -145,6 +147,14 @@ export default function BoardContent({
           (card) => card._id
         );
       }
+      if (triggerFrom === "handleDragEnd") {
+        moveCardToDifferentColumn(
+          activeDraggingCardId,
+          oldColumnWhenDraggingCard._id,
+          nextOverColumn._id,
+          nextColumns
+        );
+      }
       return nextColumns;
     });
   };
@@ -196,7 +206,8 @@ export default function BoardContent({
         over,
         activeColumn,
         activeDraggingCardId,
-        activeDraggingCardData
+        activeDraggingCardData,
+        "handleDragOver"
       );
     }
   };
@@ -228,7 +239,8 @@ export default function BoardContent({
           over,
           activeColumn,
           activeDraggingCardId,
-          activeDraggingCardData
+          activeDraggingCardData,
+          "handleDragEnd"
         );
       } else {
         // kéo thả card ở cùng một column
@@ -247,6 +259,8 @@ export default function BoardContent({
           oldCardIndex,
           newCardIndex
         );
+        const dndOrderedCardIds = dndOrderedCards.map((card) => card._id);
+        // vẫn gọi update state  ở đây để tránh delay hoặc flickering giao diện lúc kéo thả cần phải chờ gọi api
         setOrderedColumns((prevColumns) => {
           // clone mảng OrderedColumnsState cũ ra một cái mới để xửu lý data rồi return - cập nhật lại OrderedColumnsState
           const nextColumns = cloneDeep(prevColumns);
@@ -258,9 +272,14 @@ export default function BoardContent({
 
           // cập nhật lại 2 giá trị mới là card và cardOrderIds trong cái targetColumn
           targetColumn.cards = dndOrderedCards;
-          targetColumn.cardOrderIds = dndOrderedCards.map((card) => card._id);
+          targetColumn.cardOrderIds = dndOrderedCardIds;
           return nextColumns;
         });
+        moveCardIntheSameColumn(
+          dndOrderedCards,
+          dndOrderedCardIds,
+          oldColumnWhenDraggingCard._id
+        );
       }
     }
     if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN) {
@@ -283,10 +302,10 @@ export default function BoardContent({
           newColumnIndex
         );
         // const dndOrderedColumnsIds = dndOrderedColumns.map(c=> c.id)
-        // 2 mảng trên sau này dùng để xử lý gọi api
-        moveColumns(dndOrderedColumns);
         // cập nhật lại state columns ban đầu sau khi đã kéo thả
         setOrderedColumns(dndOrderedColumns);
+        // 2 mảng trên sau này dùng để xử lý gọi api
+        moveColumns(dndOrderedColumns);
       }
     }
     // những dữ liệu sau khi kéo thả phải đưa về null mặc định ban đ
