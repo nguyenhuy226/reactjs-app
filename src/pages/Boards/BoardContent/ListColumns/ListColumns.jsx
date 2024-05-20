@@ -11,7 +11,12 @@ import {
 } from "@dnd-kit/sortable";
 import { useState } from "react";
 
-function ListColumns({ columns, createNewColumn, createNewCard }) {
+function ListColumns({
+  columns,
+  createNewColumn,
+  createNewCard,
+  deleteColumnDetails,
+}) {
   // thằng SortableContext yêu cầu  items  là một mảng dạng ['id-1','id-2',..] chứ không phải [{id : 'id-1'},{id:'id-2'}]
   // Nếu không đúng thì vẫn kéo thả được nhưng không có animation
   // https://github.com/clauderic/dnd-kit/issues/183#issuecomment-812569512
@@ -52,6 +57,7 @@ function ListColumns({ columns, createNewColumn, createNewCard }) {
             key={column._id}
             column={column}
             createNewCard={createNewCard}
+            deleteColumnDetails={deleteColumnDetails}
           />
         ))}
         {!openNewClumnForm ? (

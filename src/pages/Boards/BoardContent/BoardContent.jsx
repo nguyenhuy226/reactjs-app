@@ -32,6 +32,7 @@ export default function BoardContent({
   moveColumns,
   moveCardIntheSameColumn,
   moveCardToDifferentColumn,
+  deleteColumnDetails,
 }) {
   // nếu dúng pinterSensor  mặc định thì phải kết hợp thuộc tích css touch-action: none ở những phần tử nào kéo thả - nhưng mà còn bug
   // const pointerSensor = useSensor(PointerSensor, {
@@ -79,7 +80,8 @@ export default function BoardContent({
     activeColumn,
     activeDraggingCardId,
     activeDraggingCardData,
-    triggerFrom
+    triggerFrom,
+    deleteColumnDetails
   ) => {
     setOrderedColumns((prevColumns) => {
       // Tìm vị trí (index) của overCard  trong column đích (nơi card sắp được thả )
@@ -393,6 +395,7 @@ export default function BoardContent({
           columns={orderedColumns}
           createNewColumn={createNewColumn}
           createNewCard={createNewCard}
+          deleteColumnDetails={deleteColumnDetails}
         />
         <DragOverlay dropAnimation={drogAnimation}>
           {!activeDragItemType && null}

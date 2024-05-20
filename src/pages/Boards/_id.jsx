@@ -5,7 +5,7 @@ import AppBar from "~/components/AppBar/AppBar";
 import BoardBar from "./BoardBar/BoardBar";
 import BoardContent from "./BoardContent/BoardContent";
 import Box from "@mui/material/Box";
-
+import { toast } from "react-toastify";
 import {
   fetchBoardDetailsAPI,
   createNewColumnAPI,
@@ -13,6 +13,7 @@ import {
   updateBoardDetailsAPI,
   updateColumnDetailsAPI,
   moveCardToDifferentColumnAPI,
+  deleteColumnDetailsAPI,
 } from "~/apis";
 
 import { generatePlaceholderCard } from "~/utils/formatter";
@@ -64,8 +65,13 @@ function Board() {
       (column) => column._id === createdCard.columnId
     );
     if (columnToUpdate) {
-      columnToUpdate.cards.push(createdCard);
-      columnToUpdate.cardOrderIds.push(createdCard._id);
+      if (columnToUpdate.cards.some((card) => card.FE_PlaceholderCard)) {
+        columnToUpdate.cards = [createdCard];
+        columnToUpdate.cardOrderIds = [createdCard._id];
+      } else {
+        columnToUpdate.cards.push(createdCard);
+        columnToUpdate.cardOrderIds.push(createdCard._id);
+      }
     }
     setBoard(newBoard);
   };
@@ -116,16 +122,34 @@ function Board() {
     newBoard.columnOrderIds = dndOrderedColumnsIds;
     setBoard(newBoard);
 
+    let prevCardOrderIds = dndOrderedColumns.find(
+      (c) => c._id === prevcolumnId
+    )?.cardOrderIds;
+    // xử lý vấn đề khi kéo card cuối cùng ra khỏi column, column rỗng sẽ có placeholder card , cần xóa nó đi trước khi gủi dữ liệu lên cho phía BE
+    if (prevCardOrderIds[0].includes("placeholder-card")) prevCardOrderIds = [];
     moveCardToDifferentColumnAPI({
       currentCardId,
       prevcolumnId,
-      prevCardOrderIds: dndOrderedColumns.find((c) => c._id === prevcolumnId)
-        ?.cardOrderIds,
+      prevCardOrderIds,
       nextColumnId,
       nextCardOrderIds: dndOrderedColumns.find((c) => c._id === nextColumnId)
         ?.cardOrderIds,
     });
   };
+
+  const deleteColumnDetails = (columnId) => {
+    const newBoard = { ...board };
+    newBoard.columns = newBoard.columns.filter((c) => c._id !== columnId);
+    newBoard.columnOrderIds = newBoard.columnOrderIds.filter(
+      (_id) => _id !== columnId
+    );
+    setBoard(newBoard);
+
+    deleteColumnDetailsAPI(columnId).then((res) => {
+      toast.success(res.deleteResult);
+    });
+  };
+
   if (!board) {
     return <Box>loading...</Box>;
   }
@@ -140,6 +164,7 @@ function Board() {
         moveColumns={moveColumns}
         moveCardIntheSameColumn={moveCardIntheSameColumn}
         moveCardToDifferentColumn={moveCardToDifferentColumn}
+        deleteColumnDetails={deleteColumnDetails}
       />
     </Container>
   );

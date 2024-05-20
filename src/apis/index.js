@@ -29,6 +29,10 @@ export const updateColumnDetailsAPI = async (columnId, updateData) => {
   );
   return respone.data;
 };
+export const deleteColumnDetailsAPI = async (columnId) => {
+  const respone = await axios.delete(`${API_ROOT}/v1/columns/${columnId}`);
+  return respone.data;
+};
 
 export const createNewColumnAPI = async (newColumnData) => {
   const respone = await axios.post(`${API_ROOT}/v1/columns/`, newColumnData);
