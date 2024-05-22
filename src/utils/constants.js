@@ -9,5 +9,4 @@ if (process.env.BUILD_MODE === "dev") {
 if (process.env.BUILD_MODE === "production") {
   apiRoot = "https://node-api-2tsp.onrender.com";
 }
-console.log(apiRoot);
 export const API_ROOT = apiRoot;
